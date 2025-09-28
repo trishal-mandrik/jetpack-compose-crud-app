@@ -8,7 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class ProductRepository {
     private val api = Retrofit.Builder()
-        .baseUrl("https://42e21078f7d9.ngrok-free.app/api/")
+        .baseUrl("https://405bd8cbfd37.ngrok-free.app/api/")
         .addConverterFactory(GsonConverterFactory.create())
         .build()
         .create(ApiService::class.java)
@@ -19,5 +19,9 @@ class ProductRepository {
 
     suspend fun getAllProducts(): Response<List<Product>> {
         return api.getAllProducts()
+    }
+
+    suspend fun deleteProduct(id: Int): Response<Any> {
+        return api.deleteProduct(id)
     }
 }

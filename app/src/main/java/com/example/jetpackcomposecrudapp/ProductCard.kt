@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -15,11 +16,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.jetpackcomposecrudapp.model.Product
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
 fun ProductCard(
     product: Product,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onDelete: (Int) -> Unit = {}
 ) {
     Card(
         modifier = modifier
@@ -44,23 +49,36 @@ fun ProductCard(
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
                 )
             }
-            Text(
-                text = "$${product.price}",
-                style = MaterialTheme.typography.headlineSmall,
+            Column(
                 modifier = Modifier
-                    .weight(1f)
-                    .padding(end = 8.dp),
-                textAlign = TextAlign.End
-            )
+                    .fillMaxWidth()
+                    .weight(1f),
+                horizontalAlignment = Alignment.End
+            ) {
+                Text(
+                    text = "$${product.price}",
+                    style = MaterialTheme.typography.headlineSmall,
+                    modifier = Modifier.padding(end = 8.dp),
+                    textAlign = TextAlign.End
+                )
+                Button(
+                    onClick = {
+                        product.productId?.let { onDelete(it) }
+                    },
+                    modifier = Modifier.padding(top = 8.dp, end = 8.dp)
+                ) {
+                    Text("Delete")
+                }
+            }
         }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
+fun ProductCardPreview() {
     val product = Product("Sample Product", 10, 99.99)
     ProductCard(
-        product = product
+        product = product,
     )
 }

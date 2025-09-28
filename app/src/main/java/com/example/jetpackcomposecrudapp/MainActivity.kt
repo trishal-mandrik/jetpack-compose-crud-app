@@ -77,6 +77,22 @@ fun CrudApp() {
         }
     }
 
+    val onDeleteProduct: (Int) -> Unit = { productId ->
+        coroutineScope.launch {
+            isLoading = true
+            try {
+                val response = repository.deleteProduct(productId)
+                if (response.isSuccessful) {
+                    fetchProducts() // Refresh the list after deletion
+                }
+            } catch (_: Exception) {
+
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
     LaunchedEffect(Unit) {
         fetchProducts()
     }
@@ -173,6 +189,7 @@ fun CrudApp() {
             items(productList) { product ->
                 ProductCard(
                     product = product,
+                    onDelete = onDeleteProduct
                 )
             }
         }
