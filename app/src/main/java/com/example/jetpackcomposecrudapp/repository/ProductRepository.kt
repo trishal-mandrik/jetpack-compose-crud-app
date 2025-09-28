@@ -8,12 +8,16 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class ProductRepository {
     private val api = Retrofit.Builder()
-        .baseUrl("https://4745868192ab.ngrok-free.app/api/") // Use 10.0.2.2 for emulator localhost
+        .baseUrl("https://42e21078f7d9.ngrok-free.app/api/")
         .addConverterFactory(GsonConverterFactory.create())
         .build()
         .create(ApiService::class.java)
 
     suspend fun createProduct(product: Product): Response<Any> {
         return api.createProduct(product)
+    }
+
+    suspend fun getAllProducts(): Response<List<Product>> {
+        return api.getAllProducts()
     }
 }

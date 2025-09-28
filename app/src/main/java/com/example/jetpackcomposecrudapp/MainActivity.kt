@@ -12,12 +12,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,10 +55,32 @@ fun CrudApp() {
     var productName by remember { mutableStateOf("") }
     var quantity by remember { mutableStateOf("") }
     var price by remember { mutableStateOf("") }
+    var productList by remember { mutableStateOf<List<Product>>(emptyList()) }
 
     var isLoading by remember { mutableStateOf(false) }
     val repository = remember { ProductRepository() }
     val coroutineScope = rememberCoroutineScope()
+
+    fun fetchProducts() {
+        coroutineScope.launch {
+            isLoading = true
+            try {
+                val response = repository.getAllProducts()
+                if (response.isSuccessful) {
+                    productList = response.body() ?: emptyList()
+                }
+            } catch (_: Exception) {
+
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        fetchProducts()
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -65,8 +90,7 @@ fun CrudApp() {
         Spacer(modifier = Modifier.height(100.dp))
         Text(
             text = "Jetpack Compose CRUD App",
-            modifier = Modifier
-                .padding(16.dp),
+            modifier = Modifier.padding(16.dp),
             style = MaterialTheme.typography.headlineSmall,
             textAlign = TextAlign.Center
         )
@@ -124,6 +148,7 @@ fun CrudApp() {
                             productName = ""
                             quantity = ""
                             price = ""
+                            fetchProducts()
                         }
                     } catch (_: Exception) {
 
@@ -141,6 +166,14 @@ fun CrudApp() {
                 CircularProgressIndicator(modifier = Modifier.size(16.dp))
             } else {
                 Text("Submit")
+            }
+        }
+        Spacer(modifier = Modifier.height(20.dp))
+        LazyColumn {
+            items(productList) { product ->
+                ProductCard(
+                    product = product,
+                )
             }
         }
     }
